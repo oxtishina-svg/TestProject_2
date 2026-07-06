@@ -11,4 +11,4 @@ def get_mask_account(account_number: str) -> str:
     if len(account_number) != 20:
         raise ValueError("Номер счета должен содержать 20 цифр")
 
-    return f"**{account_number[-4:]}"
+#test_commit
