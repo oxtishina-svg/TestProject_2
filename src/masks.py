@@ -10,5 +10,3 @@ def get_mask_account(account_number: str) -> str:
     """Функция маскировки номера банковского счета."""
     if len(account_number) != 20:
         raise ValueError("Номер счета должен содержать 20 цифр")
-
-#test_commit
