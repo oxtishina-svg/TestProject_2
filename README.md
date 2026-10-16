@@ -10,24 +10,19 @@
 - определения типа платежного инструмента и его маскировки;
 - преобразования даты к удобному формату;
 - фильтрации списка операций по статусу;
-- сортировки операций по дате;
-- фильтрации транзакций по валюте с использованием генератора;
-- последовательного получения описаний транзакций;
-- генерации номеров банковских карт в заданном диапазоне.
+- сортировки операций по дате.
 
 ## Структура проекта
 
-```
+```text
 src/
     masks.py
     widget.py
     processing.py
-    generators.py
 tests/
     test_masks.py
     test_widget.py
     test_processing.py
-    test_generators.py
 ```
 
 ## Установка
@@ -102,59 +97,51 @@ result = filter_by_state(operations)
 ```python
 from src.processing import sort_by_date
 
+operations = [
+    {"state": "EXECUTED", "date": "2024-03-11T02:26:18.671407"},
+    {"state": "CANCELED", "date": "2024-02-10T12:00:00.000000"},
+]
+
 result = sort_by_date(operations)
 ```
 
-### Фильтрация транзакций по валюте
+## Тестирование
 
-```python
-from src.generators import filter_by_currency
+Для тестирования проекта используется библиотека `pytest`.
 
-transactions = [
-    {
-        "operationAmount": {
-            "currency": {
-                "code": "USD"
-            }
-        },
-        "description": "Перевод организации",
-    },
-    {
-        "operationAmount": {
-            "currency": {
-                "code": "RUB"
-            }
-        },
-        "description": "Перевод со счета на счет",
-    },
-]
+Тесты расположены в директории `tests` и разделены по модулям проекта:
 
-usd_transactions = filter_by_currency(transactions, "USD")
-
-print(next(usd_transactions))
+```text
+tests/
+    test_masks.py
+    test_widget.py
+    test_processing.py
 ```
 
-### Получение описаний транзакций
+Для запуска всех тестов выполните:
 
-```python
-from src.generators import transaction_descriptions
-
-descriptions = transaction_descriptions(transactions)
-
-print(next(descriptions))
-print(next(descriptions))
+```bash
+pytest
 ```
 
-### Генерация номеров банковских карт
+В тестах используются фикстуры и параметризация для проверки различных вариантов входных данных.
 
-```python
-from src.generators import card_number_generator
+Для проверки покрытия функционального кода тестами выполните:
 
-card_numbers = card_number_generator(1, 3)
+```bash
+pytest --cov=src --cov-report=term-missing --cov-report=html
+```
 
-print(next(card_numbers))
-print(next(card_numbers))
-print(next(card_numbers))
+HTML-отчет о покрытии тестами создается в директории:
+
+```text
+htmlcov/
+```
+
+Для просмотра отчета откройте файл:
+
+```text
+htmlcov/index.html
 ```
 
 ## Автор
