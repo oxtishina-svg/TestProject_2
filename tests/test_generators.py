@@ -1,15 +1,24 @@
+from typing import Any
+
 import pytest
 
-from src.generators import card_number_generator, filter_by_currency, transaction_descriptions
+from src.generators import (
+    card_number_generator,
+    filter_by_currency,
+    transaction_descriptions,
+)
+
+
+Transaction = dict[str, Any]
 
 
 @pytest.fixture
-def transactions():
+def transactions() -> list[Transaction]:
     return [
         {
             "operationAmount": {
                 "currency": {
-                    "code": "USD"
+                    "code": "USD",
                 }
             },
             "description": "Перевод организации",
@@ -17,7 +26,7 @@ def transactions():
         {
             "operationAmount": {
                 "currency": {
-                    "code": "RUB"
+                    "code": "RUB",
                 }
             },
             "description": "Перевод со счета на счет",
@@ -25,7 +34,7 @@ def transactions():
         {
             "operationAmount": {
                 "currency": {
-                    "code": "USD"
+                    "code": "USD",
                 }
             },
             "description": "Перевод с карты на карту",
@@ -33,21 +42,27 @@ def transactions():
     ]
 
 
-def test_filter_by_currency(transactions):
+def test_filter_by_currency(
+    transactions: list[Transaction],
+) -> None:
     usd_transactions = filter_by_currency(transactions, "USD")
 
     assert next(usd_transactions)["description"] == "Перевод организации"
     assert next(usd_transactions)["description"] == "Перевод с карты на карту"
 
 
-def test_filter_by_currency_no_matches(transactions):
+def test_filter_by_currency_no_matches(
+    transactions: list[Transaction],
+) -> None:
     eur_transactions = filter_by_currency(transactions, "EUR")
 
     with pytest.raises(StopIteration):
         next(eur_transactions)
 
 
-def test_transaction_descriptions(transactions):
+def test_transaction_descriptions(
+    transactions: list[Transaction],
+) -> None:
     descriptions = transaction_descriptions(transactions)
 
     assert next(descriptions) == "Перевод организации"
@@ -55,7 +70,7 @@ def test_transaction_descriptions(transactions):
     assert next(descriptions) == "Перевод с карты на карту"
 
 
-def test_transaction_descriptions_empty():
+def test_transaction_descriptions_empty() -> None:
     descriptions = transaction_descriptions([])
 
     with pytest.raises(StopIteration):
@@ -84,5 +99,9 @@ def test_transaction_descriptions_empty():
         ),
     ],
 )
-def test_card_number_generator(start, stop, expected):
+def test_card_number_generator(
+    start: int,
+    stop: int,
+    expected: list[str],
+) -> None:
     assert list(card_number_generator(start, stop)) == expected
