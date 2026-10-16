@@ -10,7 +10,10 @@
 - определения типа платежного инструмента и его маскировки;
 - преобразования даты к удобному формату;
 - фильтрации списка операций по статусу;
-- сортировки операций по дате.
+- сортировки операций по дате;
+- фильтрации транзакций по валюте с использованием генератора;
+- последовательного получения описаний транзакций;
+- генерации номеров банковских карт в заданном диапазоне.
 
 ## Структура проекта
 
@@ -19,7 +22,12 @@ src/
     masks.py
     widget.py
     processing.py
+    generators.py
 tests/
+    test_masks.py
+    test_widget.py
+    test_processing.py
+    test_generators.py
 ```
 
 ## Установка
@@ -81,7 +89,12 @@ print(get_date("2024-03-11T02:26:18.671407"))
 ```python
 from src.processing import filter_by_state
 
-result = filter_by_state(data)
+operations = [
+    {"state": "EXECUTED", "date": "2024-03-11T02:26:18.671407"},
+    {"state": "CANCELED", "date": "2024-02-10T12:00:00.000000"},
+]
+
+result = filter_by_state(operations)
 ```
 
 ### Сортировка операций
@@ -89,7 +102,59 @@ result = filter_by_state(data)
 ```python
 from src.processing import sort_by_date
 
-result = sort_by_date(data)
+result = sort_by_date(operations)
+```
+
+### Фильтрация транзакций по валюте
+
+```python
+from src.generators import filter_by_currency
+
+transactions = [
+    {
+        "operationAmount": {
+            "currency": {
+                "code": "USD"
+            }
+        },
+        "description": "Перевод организации",
+    },
+    {
+        "operationAmount": {
+            "currency": {
+                "code": "RUB"
+            }
+        },
+        "description": "Перевод со счета на счет",
+    },
+]
+
+usd_transactions = filter_by_currency(transactions, "USD")
+
+print(next(usd_transactions))
+```
+
+### Получение описаний транзакций
+
+```python
+from src.generators import transaction_descriptions
+
+descriptions = transaction_descriptions(transactions)
+
+print(next(descriptions))
+print(next(descriptions))
+```
+
+### Генерация номеров банковских карт
+
+```python
+from src.generators import card_number_generator
+
+card_numbers = card_number_generator(1, 3)
+
+print(next(card_numbers))
+print(next(card_numbers))
+print(next(card_numbers))
 ```
 
 ## Автор
