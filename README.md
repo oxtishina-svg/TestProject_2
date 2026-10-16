@@ -17,7 +17,7 @@
 
 ## Структура проекта
 
-```
+```text
 src/
     masks.py
     widget.py
@@ -102,6 +102,11 @@ result = filter_by_state(operations)
 ```python
 from src.processing import sort_by_date
 
+operations = [
+    {"state": "EXECUTED", "date": "2024-03-11T02:26:18.671407"},
+    {"state": "CANCELED", "date": "2024-02-10T12:00:00.000000"},
+]
+
 result = sort_by_date(operations)
 ```
 
@@ -155,6 +160,54 @@ card_numbers = card_number_generator(1, 3)
 print(next(card_numbers))
 print(next(card_numbers))
 print(next(card_numbers))
+```
+
+Пример результата:
+
+```text
+0000 0000 0000 0001
+0000 0000 0000 0002
+0000 0000 0000 0003
+```
+
+## Тестирование
+
+Для тестирования проекта используется библиотека `pytest`.
+
+Тесты расположены в директории `tests` и разделены по модулям проекта:
+
+```text
+tests/
+    test_masks.py
+    test_widget.py
+    test_processing.py
+    test_generators.py
+```
+
+Для запуска всех тестов выполните:
+
+```bash
+pytest
+```
+
+В тестах используются фикстуры и параметризация для проверки различных вариантов входных данных.
+
+Для проверки покрытия функционального кода тестами выполните:
+
+```bash
+pytest --cov=src --cov-report=term-missing --cov-report=html
+```
+
+HTML-отчет о покрытии тестами создается в директории:
+
+```text
+htmlcov/
+```
+
+Для просмотра отчета откройте файл:
+
+```text
+htmlcov/index.html
 ```
 
 ## Автор
