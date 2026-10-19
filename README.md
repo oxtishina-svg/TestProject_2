@@ -13,7 +13,8 @@
 - сортировки операций по дате;
 - фильтрации транзакций по валюте с использованием генератора;
 - последовательного получения описаний транзакций;
-- генерации номеров банковских карт в заданном диапазоне.
+- генерации номеров банковских карт в заданном диапазоне; 
+- логирования выполнения функций с помощью декоратора `log`.
 
 ## Структура проекта
 
@@ -23,11 +24,13 @@ src/
     widget.py
     processing.py
     generators.py
+    decorators.py
 tests/
     test_masks.py
     test_widget.py
     test_processing.py
     test_generators.py
+    test_decorators.py
 ```
 
 ## Установка
@@ -155,6 +158,80 @@ card_numbers = card_number_generator(1, 3)
 print(next(card_numbers))
 print(next(card_numbers))
 print(next(card_numbers))
+```
+### Логирование работы функций
+
+Декоратор `log` позволяет записывать информацию о выполнении функции в консоль или файл.
+
+Если имя файла не передано, лог выводится в консоль:
+
+```python
+from src.decorators import log
+
+
+@log()
+def add_numbers(x, y):
+    return x + y
+
+
+add_numbers(1, 2)
+```
+
+Результат:
+
+```text
+add_numbers ok
+```
+
+Если указать имя файла, сообщение будет записано в файл:
+
+```python
+@log(filename="mylog.txt")
+def add_numbers(x, y):
+    return x + y
+```
+
+При возникновении ошибки декоратор записывает имя функции, информацию об ошибке и переданные аргументы.
+
+## Тестирование
+
+Для тестирования проекта используется библиотека `pytest`.
+
+Тесты расположены в директории `tests` и разделены по модулям проекта:
+
+```text
+tests/
+    test_masks.py
+    test_widget.py
+    test_processing.py
+    test_generators.py
+    test_decorators.py
+```
+
+Для запуска всех тестов выполните:
+
+```bash
+pytest
+```
+
+В тестах используются фикстуры и параметризация для проверки различных вариантов входных данных.
+
+Для проверки покрытия функционального кода тестами выполните:
+
+```bash
+pytest --cov=src --cov-report=term-missing --cov-report=html
+```
+
+HTML-отчет о покрытии тестами создается в директории:
+
+```text
+htmlcov/
+```
+
+Для просмотра отчета откройте файл:
+
+```text
+htmlcov/index.html
 ```
 
 ## Автор
