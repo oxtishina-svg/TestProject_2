@@ -1,5 +1,7 @@
 from typing import Any
 
+import pandas as pd
+
 from src.data_processing import read_transactions_csv, read_transactions_excel
 from src.processing import filter_by_state, process_bank_search, sort_by_date
 from src.utils import load_transactions
@@ -37,12 +39,15 @@ def print_transaction(transaction: dict[str, Any]) -> None:
     sender = transaction.get("from")
     receiver = transaction.get("to")
 
-    if sender and receiver:
+    has_sender = sender is not None and pd.notna(sender)
+    has_receiver = receiver is not None and pd.notna(receiver)
+
+    if has_sender and has_receiver:
         print(
             f"{mask_account_card(str(sender))} -> "
             f"{mask_account_card(str(receiver))}"
         )
-    elif receiver:
+    elif has_receiver:
         print(mask_account_card(str(receiver)))
 
     amount = get_transaction_amount(transaction)
@@ -65,7 +70,9 @@ def main() -> None:
     file_choice = input("Пользователь: ").strip()
 
     if file_choice == "1":
-        transactions = load_transactions("data/operations.json")
+        transactions = load_transactions(
+            "data/operations.json"
+        )
         print("Для обработки выбран JSON-файл.")
 
     elif file_choice == "2":
@@ -105,7 +112,9 @@ def main() -> None:
         if state in available_states:
             break
 
-        print(f'Статус операции "{state}" недоступен.')
+        print(
+            f'Статус операции "{state}" недоступен.'
+        )
 
     transactions = filter_by_state(
         transactions,
@@ -159,7 +168,9 @@ def main() -> None:
             search,
         )
 
-    print("Распечатываю итоговый список транзакций...")
+    print(
+        "Распечатываю итоговый список транзакций..."
+    )
     print()
 
     if not transactions:
@@ -170,7 +181,7 @@ def main() -> None:
         return
 
     print(
-        f"Всего банковских операций в выборке: "
+        "Всего банковских операций в выборке: "
         f"{len(transactions)}"
     )
     print()
