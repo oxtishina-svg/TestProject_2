@@ -1,4 +1,4 @@
-from src.processing import filter_by_state, sort_by_date
+from src.processing import filter_by_state, process_bank_operations, process_bank_search, sort_by_date
 
 
 def test_filter_by_state():
@@ -55,3 +55,77 @@ def test_sort_by_date_ascending():
         {"date": "2018-06-30T02:08:58.425572"},
         {"date": "2019-04-04T23:20:05.206878"},
     ]
+
+
+def test_process_bank_search() -> None:
+    transactions = [
+        {
+            "description": "Перевод организации",
+        },
+        {
+            "description": "Открытие вклада",
+        },
+        {
+            "description": "Перевод со счета на счет",
+        },
+    ]
+
+    result = process_bank_search(
+        transactions,
+        "перевод",
+    )
+
+    assert result == [
+        {
+            "description": "Перевод организации",
+        },
+        {
+            "description": "Перевод со счета на счет",
+        },
+    ]
+
+
+def test_process_bank_search_no_matches() -> None:
+    transactions = [
+        {
+            "description": "Открытие вклада",
+        },
+    ]
+
+    result = process_bank_search(
+        transactions,
+        "перевод",
+    )
+
+    assert result == []
+
+
+def test_process_bank_operations() -> None:
+    transactions = [
+        {
+            "description": "Перевод организации",
+        },
+        {
+            "description": "Перевод организации",
+        },
+        {
+            "description": "Открытие вклада",
+        },
+    ]
+
+    categories = [
+        "Перевод организации",
+        "Открытие вклада",
+        "Перевод со счета на счет",
+    ]
+
+    result = process_bank_operations(
+        transactions,
+        categories,
+    )
+
+    assert result == {
+        "Перевод организации": 2,
+        "Открытие вклада": 1,
+        "Перевод со счета на счет": 0,
+    }
